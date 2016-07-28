@@ -78,8 +78,8 @@ public class Main {
 	JMenu file;
 	JMenuItem subjectItem;
 	JMenuItem equipmentItem;
-
 	JMenuItem locationItem;
+	JMenuItem repairpieceItem;
 
 	JMenuItem logItem;
 
@@ -368,14 +368,18 @@ public class Main {
 		mb = new JMenuBar();
 		file = new JMenu("系统配置");
 
+		Icon folderIcon = new ImageIcon("ico/folder.png");
+		subjectItem = new JMenuItem("专业类别配置", folderIcon);
+
+		Icon openIcon = new ImageIcon("ico/open.png");
+		equipmentItem = new JMenuItem("设备名称配置", openIcon);
+
+		Icon diskIcon = new ImageIcon("ico/disk.png");
+		locationItem = new JMenuItem("存放地点配置", diskIcon);
+
 		Icon newIcon = new ImageIcon("ico/new.png");
-		subjectItem = new JMenuItem("专业类别配置", newIcon);
-
-		Icon saveIcon = new ImageIcon("ico/save.png");
-		equipmentItem = new JMenuItem("设备名称配置", saveIcon);
-
-		locationItem = new JMenuItem("存放地点配置", saveIcon);
-
+		repairpieceItem = new JMenuItem("板件配置",newIcon);
+		
 		logItem = new JMenuItem("操作日志");
 
 		Icon exitIcon = new ImageIcon("ico/exit.png");
@@ -384,6 +388,7 @@ public class Main {
 		file.add(subjectItem);
 		file.add(locationItem);
 		file.add(equipmentItem);
+		file.add(repairpieceItem);
 		file.add(logItem);
 		file.add(exitItem);
 		// 将file菜单添加到mb菜单条中
@@ -424,6 +429,29 @@ public class Main {
 				new LocationItemDiag();
 			}
 		});
+		
+		//-------------------板件配置，为专业类别配置的子菜单--------
+		repairpieceItem.setAccelerator(KeyStroke.getKeyStroke('R',
+				InputEvent.CTRL_MASK));
+		repairpieceItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				new RepairPieceItemDiag();
+			}
+		});
+		exitItem.setAccelerator(KeyStroke.getKeyStroke('X',
+				InputEvent.CTRL_MASK));
+		exitItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				System.exit(0);
+			}
+		});
+		
 
 	}
 

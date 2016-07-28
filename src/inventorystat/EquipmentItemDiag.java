@@ -114,13 +114,9 @@ public class EquipmentItemDiag extends JDialog {
 						e.printStackTrace();
 					}
 					newequipmentText.setText(null);
-					// 在点击按钮后强制刷新一次左侧列表
 				}
 
 			}
-
-					
-
 		
 		});
 		
