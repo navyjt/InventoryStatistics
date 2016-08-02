@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.swing.JButton;
@@ -35,7 +36,6 @@ import javax.swing.event.PopupMenuListener;
 
 import com.eltima.components.ui.DatePicker;
 
-import util.CalendarPanel;
 import util.ConfigFile;
 
 public class AddRepairpieceRecordDiag extends JDialog {
@@ -62,9 +62,13 @@ public class AddRepairpieceRecordDiag extends JDialog {
 	private JLabel commentLabel;
 	private JLabel stroageTimeLabel;
 	private JLabel useTimeLabel;
+	private JLabel repairTimeLabel;
 	private JTextArea commentField;
 	private JButton addButton;
 	private JButton cancelButton;
+	private DatePicker usedatepick;
+	private DatePicker storagedatepick;
+	private DatePicker repairdatepick;
 
 	public AddRepairpieceRecordDiag() {
 
@@ -112,6 +116,7 @@ public class AddRepairpieceRecordDiag extends JDialog {
 		runningStateComboBox.addItem("使用中");
 		runningStateComboBox.addItem("送修中");
 
+		
 		serialNoField = new JTextField("板件序列号,可以为空", 12);
 		serialNoField.setBounds(335, 25, 150, 25);
 
@@ -120,10 +125,13 @@ public class AddRepairpieceRecordDiag extends JDialog {
 
 		useTimeLabel = new JLabel("使用时间：");
 		useTimeLabel.setBounds(265, 60, 150, 25);
+		repairTimeLabel = new JLabel("送修时间：");
+		repairTimeLabel.setBounds(15, 95, 80, 25);
 		
-		DatePicker storagedatepick = new DatePicker(repairPieceDetailPanel);
-		storagedatepick.setLocale(Locale.US);// 设置显示语言
-		storagedatepick.setPattern("MM/dd/yyyy");// 设置日期格式化字符串
+		storagedatepick = new DatePicker(repairPieceDetailPanel,new Date());
+		//此句有bug，用了此句后不能正常获取返回值
+		//storagedatepick.setLocale(Locale.US);// 设置显示语言
+		storagedatepick.setPattern("yyyy-MM-dd");// 设置日期格式化字符串
 		storagedatepick.setEditorable(false);// 设置是否可编辑
 		storagedatepick.setBackground(Color.gray);// 设置背景色
 		storagedatepick.setForeground(Color.yellow);// 设置前景色
@@ -133,9 +141,9 @@ public class AddRepairpieceRecordDiag extends JDialog {
 		// DatePicker.RIGHT 水平靠右
 		storagedatepick.setBounds(100,60,130,25);
 		
-		DatePicker usedatepick = new DatePicker(repairPieceDetailPanel);
-		usedatepick.setLocale(Locale.US);// 设置显示语言
-		usedatepick.setPattern("MM/dd/yyyy");// 设置日期格式化字符串
+		usedatepick = new DatePicker(repairPieceDetailPanel,new Date());
+		//usedatepick.setLocale(Locale.US);// 设置显示语言
+		usedatepick.setPattern("yyyy-MM-dd");// 设置日期格式化字符串
 		usedatepick.setEditorable(false);// 设置是否可编辑
 		usedatepick.setBackground(Color.gray);// 设置背景色
 		usedatepick.setForeground(Color.yellow);// 设置前景色
@@ -144,11 +152,33 @@ public class AddRepairpieceRecordDiag extends JDialog {
 		// 水平居中，DatePicker.LEFT 水平靠左
 		// DatePicker.RIGHT 水平靠右
 		usedatepick.setBounds(350,60,130,25);
+		usedatepick.setEnabled(false);
 		
-		commentLabel = new JLabel("板件备注: ");
-		commentLabel.setBounds(15, 55, 100, 85);
+		if (runningStateComboBox.getSelectedIndex() == 4) {
+			usedatepick.setEnabled(true);
+			
+		}
+		repairdatepick = new DatePicker(repairPieceDetailPanel,new Date());
+		//usedatepick.setLocale(Locale.US);// 设置显示语言
+		repairdatepick.setPattern("yyyy-MM-dd");// 设置日期格式化字符串
+		repairdatepick.setEditorable(false);// 设置是否可编辑
+		repairdatepick.setBackground(Color.gray);// 设置背景色
+		repairdatepick.setForeground(Color.yellow);// 设置前景色
+		repairdatepick.setPreferredSize(new Dimension(100, 21));// 设置大小
+		repairdatepick.setTextAlign(DatePicker.CENTER);// 设置文本水平方向位置：DatePicker.CENTER
+		// 水平居中，DatePicker.LEFT 水平靠左
+		// DatePicker.RIGHT 水平靠右
+		repairdatepick.setBounds(100,95,130,25);
+		repairdatepick.setEnabled(false);
+		
+		if (runningStateComboBox.getSelectedIndex() == 5) {
+			repairdatepick.setEnabled(true);
+			
+		}
+		commentLabel = new JLabel("板件备注：");
+		commentLabel.setBounds(15, 100, 100, 85);
 		commentField = new JTextArea("    板件备注文件，可以为空", 5, 40);
-		commentField.setBounds(15, 110, 465, 180);
+		commentField.setBounds(15, 160, 465, 130);
 
 		// 绘制添加新专业的按钮
 		addButton = new JButton("增加");
@@ -164,8 +194,10 @@ public class AddRepairpieceRecordDiag extends JDialog {
 		repairPieceDetailPanel.add(serialNoField);
 		repairPieceDetailPanel.add(stroageTimeLabel);
 		repairPieceDetailPanel.add(useTimeLabel);
+		repairPieceDetailPanel.add(repairTimeLabel);
 		repairPieceDetailPanel.add(storagedatepick);
 		repairPieceDetailPanel.add(usedatepick);
+		repairPieceDetailPanel.add(repairdatepick);
 		repairPieceDetailPanel.add(commentLabel);
 		repairPieceDetailPanel.add(commentField);
 
@@ -221,6 +253,9 @@ public class AddRepairpieceRecordDiag extends JDialog {
 				runningStateComboBox.setSelectedIndex(0);
 				serialNoField.setText("");
 				commentField.setText("");
+				
+				
+				JOptionPane.showMessageDialog(null, storagedatepick.getText() +"  "+usedatepick.getText(), "警告", JOptionPane.INFORMATION_MESSAGE);
 
 			}
 		});
@@ -468,6 +503,27 @@ public class AddRepairpieceRecordDiag extends JDialog {
 			public void popupMenuCanceled(PopupMenuEvent arg0) {
 				// TODO Auto-generated method stub
 
+			}
+		});
+		
+		runningStateComboBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (runningStateComboBox.getSelectedIndex() == 4) {
+					usedatepick.setEnabled(true);
+				}
+				else {
+					usedatepick.setEnabled(false);
+				}
+				
+				if (runningStateComboBox.getSelectedIndex() == 5) {
+					repairdatepick.setEnabled(true);
+				}
+				else {
+					repairdatepick.setEnabled(false);
+				}
 			}
 		});
 
