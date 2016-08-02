@@ -48,8 +48,8 @@ public class RepairPieceItemDiag extends JDialog {
 	private Connection conn;
 	private Statement stmt;
 	private JScrollPane resultscrollPane;
-	private String selectcategory = "";
-	private String selectequipment = "";
+	private String selectedCategory = "";
+	private String selectedEquipment = "";
 
 	private JComboBox<String> categoryComboBox;
 	private JComboBox<String> equipmentComboBox;
@@ -111,7 +111,7 @@ public class RepairPieceItemDiag extends JDialog {
 
 				else {
 
-					if (addnewrepairpiecetodb(strnewrepairpiece)) {
+					if (addRepairpieceTypetodb(strnewrepairpiece)) {
 						loadRepairPiece();
 
 					}
@@ -131,9 +131,9 @@ public class RepairPieceItemDiag extends JDialog {
 
 					if ((equipmentComboBox.getSelectedIndex() != 0)
 							&& (categoryComboBox.getSelectedIndex() != 0)) {
-						selectcategory = categoryComboBox.getSelectedItem()
+						selectedCategory = categoryComboBox.getSelectedItem()
 								.toString();
-						selectequipment = equipmentComboBox.getSelectedItem()
+						selectedEquipment = equipmentComboBox.getSelectedItem()
 								.toString();
 
 						loadRepairPiece();
@@ -151,7 +151,7 @@ public class RepairPieceItemDiag extends JDialog {
 
 	}
 
-	protected boolean addnewrepairpiecetodb(String strnewrepairpiece) {
+	protected boolean addRepairpieceTypetodb(String strnewrepairpiece) {
 
 
 
@@ -163,14 +163,14 @@ public class RepairPieceItemDiag extends JDialog {
 					ResultSet.CONCUR_UPDATABLE);
 
 			final String query = "insert into repairpiece (category,equipment,piecename) values ('"
-					+ selectcategory + "','" + selectequipment +"','"+ strnewrepairpiece +
+					+ selectedCategory + "','" + selectedEquipment +"','"+ strnewrepairpiece +
 					"') ; ";
 
 			// 查询用户选择的数据表
-			if (selectcategory.isEmpty() == false) {
+			if (selectedCategory.isEmpty() == false) {
 				
 				stmt.execute(query);
-				JOptionPane.showMessageDialog(null, "在"+ selectequipment+ "库中插入"+strnewrepairpiece +"设备成功！", "信息",
+				JOptionPane.showMessageDialog(null, "在"+ selectedEquipment+ "库中插入"+strnewrepairpiece +"设备成功！", "信息",
 						JOptionPane.INFORMATION_MESSAGE);
 				return true;
 			}
@@ -217,10 +217,10 @@ public class RepairPieceItemDiag extends JDialog {
 			}
 
 			final String query = "select piecename from repairpiece where category = '"
-					+ selectcategory
+					+ selectedCategory
 					+ "' and"
 					+ " equipment = '"
-					+ selectequipment + "' ; ";
+					+ selectedEquipment + "' ; ";
 
 			// 查询用户选择的数据表
 			rs = stmt.executeQuery(query);

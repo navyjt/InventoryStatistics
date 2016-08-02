@@ -75,7 +75,10 @@ public class Main {
 	private JComboBox<String> repairpiece;
 
 	JMenuBar mb;
-	JMenu file;
+	JMenu config;
+	JMenu newfile;
+	JMenuItem addRepairpieceRecordItem;
+	JMenuItem updateRepairpieceItem;
 	JMenuItem subjectItem;
 	JMenuItem equipmentItem;
 	JMenuItem locationItem;
@@ -366,7 +369,15 @@ public class Main {
 	private void initmenu() {
 
 		mb = new JMenuBar();
-		file = new JMenu("系统配置");
+		newfile = new JMenu("数据录入");
+		config = new JMenu("系统配置");
+		
+		Icon newIcon = new ImageIcon("ico/new.png");
+		addRepairpieceRecordItem = new JMenuItem("增加板件记录",newIcon);
+		
+		Icon copyIcon = new ImageIcon("ico/copy.png");
+		updateRepairpieceItem = new JMenuItem("修改板件记录",copyIcon);
+		
 
 		Icon folderIcon = new ImageIcon("ico/folder.png");
 		subjectItem = new JMenuItem("专业类别配置", folderIcon);
@@ -377,26 +388,43 @@ public class Main {
 		Icon diskIcon = new ImageIcon("ico/disk.png");
 		locationItem = new JMenuItem("存放地点配置", diskIcon);
 
-		Icon newIcon = new ImageIcon("ico/new.png");
-		repairpieceItem = new JMenuItem("板件配置",newIcon);
+		Icon pasteIcon = new ImageIcon("ico/paste.png");
+		repairpieceItem = new JMenuItem("板件配置",pasteIcon);
 		
 		logItem = new JMenuItem("操作日志");
 
 		Icon exitIcon = new ImageIcon("ico/exit.png");
 		exitItem = new JMenuItem("退出", exitIcon);
 		
-		file.add(subjectItem);
-		file.add(locationItem);
-		file.add(equipmentItem);
-		file.add(repairpieceItem);
-		file.add(logItem);
-		file.add(exitItem);
+		newfile.add(addRepairpieceRecordItem);
+		newfile.add(updateRepairpieceItem);
+		
+		config.add(subjectItem);
+		config.add(locationItem);
+		config.add(equipmentItem);
+		config.add(repairpieceItem);
+		config.add(logItem);
+		config.add(exitItem);
 		// 将file菜单添加到mb菜单条中
-		mb.add(file);
+		mb.add(newfile);
+		mb.add(config);
 		
 
 		// ================================增加子菜单===============
 		// -----------下面开始组合菜单、并为菜单添加事件监听器----------
+		
+		addRepairpieceRecordItem.setAccelerator(KeyStroke.getKeyStroke('A',
+				InputEvent.CTRL_MASK));
+		addRepairpieceRecordItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				new AddRepairpieceRecordDiag();
+			}
+		});
+		
+		
 		// 为subjectItem设置快捷键，设置快捷键时要使用大写字母
 		subjectItem.setAccelerator(KeyStroke.getKeyStroke('N',
 				InputEvent.CTRL_MASK));
