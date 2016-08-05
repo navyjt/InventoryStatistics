@@ -1,5 +1,10 @@
 package inventorystat;
 
+/**
+ * @author Tony
+ * 在专业类别中加入设备名称
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -38,7 +43,7 @@ import javax.swing.event.PopupMenuListener;
 import util.ConfigFile;
 import util.ResultSetTableModel;
 
-public class EquipmentItemDiag extends JDialog {
+public class AddEquipmentItemDiag extends JDialog {
 
 	private static final long serialVersionUID = -4860499372921468249L;
 	public JFrame f = new JFrame("设备名称配置");
@@ -48,131 +53,100 @@ public class EquipmentItemDiag extends JDialog {
 	private ResultSet rs;
 	private Connection conn;
 	private Statement stmt;
-	private JScrollPane resultscrollPane;
-	private String selectcategory = "" ;
+	private JScrollPane resultScrollPane;
+	private String selectedCategory = "";
 
-	private JComboBox<String> category;
+	private JComboBox<String> categoryComboBox;
 	private JButton addButton;
-	private JTextField newequipmentText;
+	private JTextField newEquipmentText;
 
-	public EquipmentItemDiag() {
+	public AddEquipmentItemDiag() {
 		f.setSize(500, 550);
 		f.setVisible(true);
 		f.setLocationRelativeTo(null);
-		
-		category = new JComboBox<String>();
 
-		category.setBounds(100,20,280,25);;
-		category.addItem("----选择专业类别----");
-		//category.setPreferredSize(new Dimension(150, 25));
-		category.setVisible(true);
+		categoryComboBox = new JComboBox<String>();
+		categoryComboBox.setBounds(100, 20, 280, 25);
+		categoryComboBox.addItem("----选择专业类别----");
+		categoryComboBox.setVisible(true);
 
-		oldEquipmentPanel.setBorder(new TitledBorder(new EtchedBorder(),
-				"现有设备列表"));
+		oldEquipmentPanel.setBorder(new TitledBorder(new EtchedBorder(), "现有设备列表"));
 		oldEquipmentPanel.setBounds(20, 65, 200, 420);
 
-		addEquipmentPanel.setBorder(new TitledBorder(new EtchedBorder(),
-				"增加设备"));
+		addEquipmentPanel.setBorder(new TitledBorder(new EtchedBorder(), "增加设备"));
 		addEquipmentPanel.setBounds(270, 65, 200, 420);
 
 		// 绘制添加新专业的按钮
 		addButton = new JButton("增加");
 		addButton.setPreferredSize(new Dimension(120, 25));
-		newequipmentText = new JTextField(15);
-		addEquipmentPanel.add(newequipmentText);
+		newEquipmentText = new JTextField(15);
+		addEquipmentPanel.add(newEquipmentText);
 		addEquipmentPanel.add(addButton);
-		
-		f.add(category);
 
+		f.add(categoryComboBox);
 		f.add(oldEquipmentPanel);
 		f.add(addEquipmentPanel);
-
 		f.setLayout(null);
 		f.setVisible(true);
-		
+
 		initCategoryCombobox();
-		
+
 		addButton.addActionListener(new ActionListener() {
-						@Override
 			public void actionPerformed(final ActionEvent arg0) {
 
-				String strnewequipment = newequipmentText.getText();
+				String strnewequipment = newEquipmentText.getText();
 				if (strnewequipment.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "请输入需要添加的设备名称！", "警告",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "请输入需要添加的设备名称！", "警告", JOptionPane.INFORMATION_MESSAGE);
 				}
-
 				else {
-
 					try {
-					if (addnewequipmenttodb(strnewequipment)) {
-						loadoldequipment();
-
-					}	
+						if (addnewequipmenttodb(strnewequipment)) {
+							loadOldEquipment();
+						}
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					newequipmentText.setText(null);
+					newEquipmentText.setText(null);
 				}
-
 			}
-		
-		});
-		
 
-		category.addItemListener(new ItemListener() {
-			
+		});
+
+		categoryComboBox.addItemListener(new ItemListener() {
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				
-				if(e.getStateChange() == ItemEvent.SELECTED){
-				
-				if (category.getSelectedIndex() != 0) {
-					selectcategory = category.getSelectedItem().toString();
-					
-					loadoldequipment();
+
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					if (categoryComboBox.getSelectedIndex() != 0) {
+						selectedCategory = categoryComboBox.getSelectedItem().toString();
+						loadOldEquipment();
+					} else {
+					}
 				}
-				else {
-					/*JOptionPane.showMessageDialog(null, "请选择相关专业类别！", "警告",
-							JOptionPane.INFORMATION_MESSAGE);*/
-					
-				}
-				}
-				
 			}
 		});
 	}
 
-	//使用返回值，当添加成功时返回true，失败是返回false，只有在成功的情况下才能加载改科目下所有装备列表。
+	// 使用返回值，当添加成功时返回true，失败是返回false，只有在成功的情况下才能加载改科目下所有装备列表。
 	protected boolean addnewequipmenttodb(String strnewequipment) throws SQLException {
-
-
-
 		try {
 			// 获取数据库连接
 			conn = ConfigFile.getConnection();
 			// 创建Statement
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-
-			final String query = "insert into equipment (name,category) values ('"
-					+ strnewequipment + "','" + selectcategory +
-					"') ; ";
-
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			final String query = "insert into equipment (name,category) values ('" + strnewequipment + "','"
+					+ selectedCategory + "') ; ";
 			// 查询用户选择的数据表
-			if (selectcategory.isEmpty() == false) {
-				
+			if (selectedCategory.isEmpty() == false) {
 				stmt.execute(query);
-				JOptionPane.showMessageDialog(null, "在"+ selectcategory+ "库中插入"+strnewequipment +"设备成功！", "信息",
+				JOptionPane.showMessageDialog(null, "在" + selectedCategory + "库中插入" + strnewequipment + "设备成功！", "信息",
 						JOptionPane.INFORMATION_MESSAGE);
 				return true;
-			}
-			else {
-				JOptionPane.showMessageDialog(null, "请先选择专业类别！", "信息",
-						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "请先选择专业类别！", "信息", JOptionPane.INFORMATION_MESSAGE);
 				return false;
-				
+
 			}
 
 		}
@@ -186,77 +160,55 @@ public class EquipmentItemDiag extends JDialog {
 		}
 		return false;
 
-	
-			
 	}
 
 	private void initCategoryCombobox() {
-		category.addPopupMenuListener(new PopupMenuListener() {
+		categoryComboBox.addPopupMenuListener(new PopupMenuListener() {
 
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
 
 				try {
 					conn = ConfigFile.getConnection();
-					stmt = conn.createStatement(
-							ResultSet.TYPE_SCROLL_INSENSITIVE,
-							ResultSet.CONCUR_UPDATABLE);
+					stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					String query = "select category from category";
-		
-					category.removeAllItems();
-
-					category.addItem("----选择专业类别----");
+					categoryComboBox.removeAllItems();
+					categoryComboBox.addItem("----选择专业类别----");
 					rs = stmt.executeQuery(query);
 
 					while (rs.next()) {
-						category.addItem(rs.getString(1));
+						categoryComboBox.addItem(rs.getString(1));
 					}
-
 				} catch (Exception e) {
-					// TODO: handle exception
 				}
 
 			}
 
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
-				// TODO Auto-generated method stub
-
 			}
-
-			@Override
 			public void popupMenuCanceled(PopupMenuEvent arg0) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 
-		
 	}
 
-	private void loadoldequipment() {
+	private void loadOldEquipment() {
 
 		try {
 			// 获取数据库连接
 			conn = ConfigFile.getConnection();
 			// 创建Statement
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 			// 如果装载JTable的JScrollPane不为空
-			if (resultscrollPane != null) {
+			if (resultScrollPane != null) {
 				// 从主窗口中删除表格
-				oldEquipmentPanel.remove(resultscrollPane);
+				oldEquipmentPanel.remove(resultScrollPane);
 			}
-
-			final String query = "select name from equipment where category = '"+ selectcategory +"'; ";
-
+			final String query = "select name from equipment where category = '" + selectedCategory + "'; ";
 			// 查询用户选择的数据表
 			rs = stmt.executeQuery(query);
-			
-		/*	if (rs != null) {
-				rs.close();
-			}*/
 			// 使用查询到的ResultSet创建TableModel对象
 			model = new ResultSetTableModel(rs, false);
 
@@ -264,16 +216,13 @@ public class EquipmentItemDiag extends JDialog {
 			final Object[] columnTitle = { "存放地点" };
 			final JTable table = new JTable(model);
 			for (int i = 0; i < table.getColumnCount(); i++) {
-				table.getColumnModel().getColumn(i)
-						.setHeaderValue(columnTitle[i]);
+				table.getColumnModel().getColumn(i).setHeaderValue(columnTitle[i]);
 			}
-			resultscrollPane = new JScrollPane(table);
-			resultscrollPane.setPreferredSize(new Dimension(oldEquipmentPanel
-					.getWidth() - 30, oldEquipmentPanel.getHeight() - 50));
-			resultscrollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			oldEquipmentPanel.add(resultscrollPane, BorderLayout.CENTER);
-
+			resultScrollPane = new JScrollPane(table);
+			resultScrollPane.setPreferredSize(new Dimension(oldEquipmentPanel.getWidth() - 30, oldEquipmentPanel
+					.getHeight() - 50));
+			resultScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			oldEquipmentPanel.add(resultScrollPane, BorderLayout.CENTER);
 			f.setVisible(true);
 		} catch (final SQLException e3) {
 			e3.printStackTrace();
@@ -283,7 +232,6 @@ public class EquipmentItemDiag extends JDialog {
 			e.printStackTrace();
 		}
 
-			
 	}
 
 }

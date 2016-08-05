@@ -37,7 +37,7 @@ import javax.swing.event.PopupMenuListener;
 import util.ConfigFile;
 import util.ResultSetTableModel;
 
-public class RepairPieceItemDiag extends JDialog {
+public class AddRepairpieceItemDiag extends JDialog {
 	private static final long serialVersionUID = -2077615712029322204L;
 
 	public JFrame f = new JFrame("板件配置");
@@ -56,7 +56,7 @@ public class RepairPieceItemDiag extends JDialog {
 	private JButton addButton;
 	private JTextField newRepairPieceText;
 
-	public RepairPieceItemDiag() {
+	public AddRepairpieceItemDiag() {
 		f.setSize(500, 550);
 		f.setVisible(true);
 		f.setLocationRelativeTo(null);
@@ -152,8 +152,6 @@ public class RepairPieceItemDiag extends JDialog {
 	}
 
 	protected boolean addRepairpieceTypetodb(String strnewrepairpiece) {
-
-
 
 		try {
 			// 获取数据库连接

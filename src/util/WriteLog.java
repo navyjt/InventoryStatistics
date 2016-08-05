@@ -6,13 +6,13 @@ import java.util.Calendar;
 /**
  * 
  * @author laomaizi
- *该段代码主要实现了对日志文件的写入功能，在书写日志文件时，加入当前时间
+ * 鍐欏叆鏃ュ織鏂囦欢
+
  */
 
 public class WriteLog {
 	
 	public WriteLog(String string) {
-		// TODO 自动生成的构造函数存根
 	}
 
 	public static void WriteLogFile(String str)

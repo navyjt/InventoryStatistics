@@ -32,70 +32,61 @@ import javax.swing.event.TableModelListener;
 import util.ConfigFile;
 import util.ResultSetTableModel;
 import util.WriteLog;
-
-public class SubjcetItemDiag extends JDialog {
+public class AddSubjcetItemDiag extends JDialog {
 
 	private static final long serialVersionUID = 3531259789500243442L;
 	public JFrame f = new JFrame("增加专业类别");
-	private JPanel oldsubjectPanel = new JPanel();
-	private JPanel addnewsubjectPanel = new JPanel();
+	private JPanel oldSubjectPanel = new JPanel();
+	private JPanel addNewSubjectPanel = new JPanel();
 	private ResultSetTableModel model;
 	private ResultSet rs;
 	private Connection conn;
 	private Statement stmt;
-	//此处也不能用static 不然会造成两个scrollpane的错误
-	private  JScrollPane resultscrollPane;
-	
+	// 此处也不能用static 不然会造成两个scrollpane的错误
+	private JScrollPane resultScrollPane;
 	private JButton addButton;
 	private JTextField newsubjcetText;
 
-	public SubjcetItemDiag(/* JFrame f, String string */) {
+	public AddSubjcetItemDiag(/* JFrame f, String string */) {
 
 		f.setSize(500, 500);
 		f.setVisible(true);
 		f.setLocationRelativeTo(null);
-		
 
-		oldsubjectPanel
-				.setBorder(new TitledBorder(new EtchedBorder(), "专业类别列表"));
-		oldsubjectPanel.setBounds(20, 15, 200, 420);
+		oldSubjectPanel.setBorder(new TitledBorder(new EtchedBorder(), "专业类别列表"));
+		oldSubjectPanel.setBounds(20, 15, 200, 420);
 
-		addnewsubjectPanel.setBorder(new TitledBorder(new EtchedBorder(),
-				"增加专业类别"));
-		addnewsubjectPanel.setBounds(270, 15, 200, 420);
+		addNewSubjectPanel.setBorder(new TitledBorder(new EtchedBorder(), "增加专业类别"));
+		addNewSubjectPanel.setBounds(270, 15, 200, 420);
 
 		// 绘制添加新专业的按钮
 		addButton = new JButton("增加");
 		addButton.setPreferredSize(new Dimension(120, 25));
 		newsubjcetText = new JTextField(15);
-		addnewsubjectPanel.add(newsubjcetText);
-		addnewsubjectPanel.add(addButton);
+		addNewSubjectPanel.add(newsubjcetText);
+		addNewSubjectPanel.add(addButton);
 
-		
-		f.add(oldsubjectPanel);
-		f.add(addnewsubjectPanel);
-
+		f.add(oldSubjectPanel);
+		f.add(addNewSubjectPanel);
 		f.setLayout(null);
 		f.setVisible(true);
 
 		loadoldsubjcet();
-		addButton.addActionListener(new ActionListener() {
 
-			@Override
+		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
 				String strnewsubject = newsubjcetText.getText();
 				if (strnewsubject.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "请输入需要添加的专业类别！", "警告",
-							JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "请输入需要添加的专业类别！", "警告", JOptionPane.INFORMATION_MESSAGE);
 				}
 
 				else {
-					
+
 					try {
 						addnewsubjcettodb(strnewsubject);
 						newsubjcetText.setText(null);
-						//在点击按钮后强制刷新一次左侧列表
+						// 在点击按钮后强制刷新一次左侧列表
 						loadoldsubjcet();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
@@ -107,24 +98,17 @@ public class SubjcetItemDiag extends JDialog {
 		});
 	}
 
-	
 	protected void addnewsubjcettodb(String string) throws SQLException {
 
 		try {
 			// 获取数据库连接
 			conn = ConfigFile.getConnection();
 			// 创建Statement
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-
-			String query = "insert into category (category) values ('" + string
-					+ "') ; ";
-
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			String query = "insert into category (category) values ('" + string + "') ; ";
 			// 查询用户选择的数据表
 			stmt.execute(query);
-			JOptionPane.showMessageDialog(null, "插入专业类别成功！", "信息",
-					JOptionPane.INFORMATION_MESSAGE);
-
+			JOptionPane.showMessageDialog(null, "插入专业类别成功！", "信息", JOptionPane.INFORMATION_MESSAGE);
 		}
 
 		catch (Exception e1) {
@@ -132,18 +116,16 @@ public class SubjcetItemDiag extends JDialog {
 		} finally {
 			conn.close();
 			stmt.close();
-
 		}
 
 	}
 
-	private void loadoldsubjcet()  {
+	private void loadoldsubjcet() {
 		try {
 			// 获取数据库连接
 			conn = ConfigFile.getConnection();
 			// 创建Statement
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		}
 
 		catch (Exception e1) {
@@ -153,10 +135,10 @@ public class SubjcetItemDiag extends JDialog {
 		// 获取数据并填充至表格中
 		try {
 			// 如果装载JTable的JScrollPane不为空
-			if (resultscrollPane != null) {
+			if (resultScrollPane != null) {
 				// 从主窗口中删除表格
-				oldsubjectPanel.remove(resultscrollPane);
-//				resultscrollPane = null;
+				oldSubjectPanel.remove(resultScrollPane);
+				// resultscrollPane = null;
 			}
 
 			String query = "select category from category ; ";
@@ -172,31 +154,27 @@ public class SubjcetItemDiag extends JDialog {
 
 					int row = evt.getFirstRow();
 					int column = evt.getColumn();
-					new WriteLog("修改的列:" + column + " ，修改的行:" + row
-							+ " ，修改后的值:" + model.getValueAt(row, column));
+					new WriteLog("修改的列:" + column + " ，修改的行:" + row + " ，修改后的值:" + model.getValueAt(row, column));
 				}
 			});
 			// 使用TableModel创建JTable，并将对应表格添加到窗口中
 			Object[] columnTitle = { "专业类别" };
 			JTable table = new JTable(model);
 			for (int i = 0; i < table.getColumnCount(); i++) {
-				table.getColumnModel().getColumn(i)
-						.setHeaderValue(columnTitle[i]);
+				table.getColumnModel().getColumn(i).setHeaderValue(columnTitle[i]);
 			}
-			resultscrollPane = new JScrollPane(table);
-			resultscrollPane.setPreferredSize(new Dimension(oldsubjectPanel
-					.getWidth() - 30, oldsubjectPanel.getHeight() - 50));
-			resultscrollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			resultScrollPane = new JScrollPane(table);
+			resultScrollPane.setPreferredSize(new Dimension(oldSubjectPanel.getWidth() - 30, oldSubjectPanel
+					.getHeight() - 50));
+			resultScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-			oldsubjectPanel.add(resultscrollPane, BorderLayout.CENTER);
-		
-			//f.validate();
-				f.setVisible(true);
+			oldSubjectPanel.add(resultScrollPane, BorderLayout.CENTER);
+
+			// f.validate();
+			f.setVisible(true);
 		} catch (SQLException e3) {
 			e3.printStackTrace();
 		}
-	
 
 	}
 
